@@ -1,0 +1,55 @@
+﻿@page "/Alunos"
+@using Newtonsoft.Json
+@inject HttpClient Http
+@using Newtonsoft.Json
+<PageTitle>Tarefas</PageTitle>
+<MudText Class="mb-8">Está lista está armazenada em arquivo Json.</MudText>
+<MudText Typo="Typo.h6" GutterBottom="true">
+   Alunos Cadastrados
+</MudText>
+<hr>
+<div class="mt-8">
+@if (forecasts == null)
+{
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<Aluno, object>(x=>x.RA)">RA</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Aluno, object>(x=>x.Nome)">Nome</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<Aluno, object>(x=>x.Curso)">Curso</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+     
+            <MudTd DataLabel="RA">@context.RA</MudTd>
+            <MudTd DataLabel="Nome do Aluno">@context.Nome</MudTd>
+            <MudTd DataLabel="Curso">@context.Curso</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+        </PagerContent>
+    </MudTable>
+}
+</div>
+
+<br>
+
+@code {
+    private Aluno[]? forecasts;
+
+      protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<Aluno[]>("sample-data/alunos.json");
+    }
+
+        public class Aluno
+    {
+        public int RA { get; set; }
+
+        public string Nome { get; set; }
+
+        public string Curso { get; set; }
+    }
+}

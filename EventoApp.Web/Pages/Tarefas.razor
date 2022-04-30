@@ -1,4 +1,4 @@
-﻿@page "/ListaTarefas"
+﻿@page "/Tarefas"
 @using Newtonsoft.Json
 @inject HttpClient Http
 @using Newtonsoft.Json
@@ -17,22 +17,19 @@
 }
 else
 {
-    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0">
-        <HeaderContent>
-            <MudTh><MudTableSortLabel SortBy="new Func<ListarTarefas, object>(x=>x.id)">Código</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<ListarTarefas, object>(x=>x.Tarefa)">Tarefa a ser Relizada</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<ListarTarefas, object>(x=>x.Time!)">Tempo</MudTableSortLabel></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-     
-            <MudTd DataLabel="Código">@context.id</MudTd>
-            <MudTd DataLabel="Tarefa a ser Relizada">@context.Tarefa</MudTd>
-            <MudTd DataLabel="Tempo">@context.Time</MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
-        </PagerContent>
-    </MudTable>
+    <MudGrid>
+        @foreach (var Tarefa in forecasts)
+        {
+           <MudItem lg="4">
+              <MudCard>
+                <MudCardContent>
+                    <MudText>Tarefa: @Tarefa.Tarefa</MudText>
+                    <MudText Typo="Typo.body2">Duração: @Tarefa.Time</MudText>
+                </MudCardContent>
+             </MudCard>
+           </MudItem>
+        }
+    </MudGrid>
 }
 </div>
 <div class="mt-8">
