@@ -1,0 +1,42 @@
+﻿<MudText Typo="Typo.h4" Class="mt-8">@Titulo</MudText>
+
+
+<table border="1">
+    <tr> 
+        <tr> 
+                <td>Tarefa a ser Realizada</td>
+                <td>Tempo para Realização</td>          
+       </tr>
+    </tr>
+    <tr>
+          @foreach(var tarefa in listaProcedimentos)
+        {
+            <td>@tarefa</td>
+        }
+    </tr>
+
+</table>
+
+
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; } = "Título da Lista";
+
+    [Parameter]
+    public string Itens { get; set; } = "Item 1;Item 2;Item 3";
+
+    [Parameter]
+    public string Procedimento { get; set; } = "Tarefa 1; Tarefa 2; Tarefa 3";
+
+    private string[] lista;
+    private string[] listaProcedimentos;
+
+    protected override void OnInitialized()
+    {
+        lista = Itens.Split(";");
+        listaProcedimentos = Procedimento.Split(";");
+    }
+
+
+}
