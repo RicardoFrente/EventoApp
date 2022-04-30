@@ -1,0 +1,106 @@
+﻿@page "/ListaTarefas"
+@using Newtonsoft.Json
+@inject HttpClient Http
+@using Newtonsoft.Json
+<PageTitle>Tarefas</PageTitle>
+<MudText Class="mb-8">Está lista está armazenada em um Banco de dados SQL Lite, 
+                       e está comunicando com o mesmo via API.
+                       Está tela conta com as ações de POST e GET no ato de adicionar uma nova tarefa.</MudText>
+<MudText Typo="Typo.h6" GutterBottom="true">
+   Tarefas a serem Realizadas
+</MudText>
+<hr>
+<div class="mt-8">
+@if (forecasts == null)
+{
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<ListarTarefas, object>(x=>x.id)">Código</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<ListarTarefas, object>(x=>x.Tarefa)">Tarefa a ser Relizada</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<ListarTarefas, object>(x=>x.Time!)">Tempo</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+     
+            <MudTd DataLabel="Código">@context.id</MudTd>
+            <MudTd DataLabel="Tarefa a ser Relizada">@context.Tarefa</MudTd>
+            <MudTd DataLabel="Tempo">@context.Time</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+        </PagerContent>
+    </MudTable>
+}
+</div>
+<div class="mt-8">
+    <MudTextField @bind-Value="novaTarefa" Label="Tarefa a ser Realizada" Variant="Variant.Text"></MudTextField>
+    <br>
+    <MudTextField @bind-Value="tempo" Label="Tempo de Execução" Variant="Variant.Text"></MudTextField>
+    <br>
+</div>
+
+@code {
+    static string? novaTarefa;
+    static string tempo;
+
+
+    public class TodoItem 
+    {
+        public string? Titulo { get; set; }
+        public string? Tempo { get; set;}
+    }   
+
+    // Salva no Banco
+    public static async Task Post()
+    {
+        var HttpClient = new HttpClient();
+        var objeto = new {tarefa = novaTarefa, time = tempo};
+        Console.WriteLine(objeto);
+        var content = ToRequest(objeto);
+        var response = await HttpClient.PostAsync(requestUri: "https://localhost:6001/Tarefas", content);
+       
+    }
+    // Converte em Json
+    private static StringContent ToRequest(object obj)
+    {
+        var json = JsonConvert.SerializeObject(obj);
+        Console.WriteLine(json);
+        var data = new StringContent(json, Encoding.UTF8, mediaType: "application/json");
+        return data;
+    }
+}
+<br>
+<MudButton Disabled="@_processing" OnClick="ProcessSomething" Variant="Variant.Filled" Color="Color.Primary">
+    @if (_processing)
+    {
+        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+        <MudText Class="ms-2">Salvando</MudText>
+    }
+    else
+    {
+        <MudText>Adicionar Tarefa</MudText>
+    }
+</MudButton>
+
+@code {
+    private ListarTarefas[]? forecasts;
+    private bool _processing = false;
+
+    async Task ProcessSomething()
+    {
+        _processing = true;
+        Post();
+        await Task.Delay(1000);
+         forecasts = await Http.GetFromJsonAsync<ListarTarefas[]>("Tarefas");
+        _processing = false;
+    }
+
+    // Metodo para buscar dados no json 
+      protected override async Task OnInitializedAsync()
+    {
+     forecasts = await Http.GetFromJsonAsync<ListarTarefas[]>("Tarefas");
+    }
+}
